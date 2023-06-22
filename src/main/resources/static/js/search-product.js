@@ -13,13 +13,9 @@ $(document).ready(function () {
         submitHandler: function (form) {
             let keyword = $('#keyword').val();
             let category = $('#category').val();
-            let formData = new FormData();
-            formData.append("keyword", $('#keyword').val());
-            formData.append("category", $('#category').val());
             $.ajax({
-                url: `/api/v1/public/search-product`,
-                type: 'POST',
-                data: formData,
+                url: `/api/v1/public/search-product?keyword=${keyword}&category=${category}`,
+                type: 'GET',
                 processData: false,
                 contentType: false,
                 success: function (response) {

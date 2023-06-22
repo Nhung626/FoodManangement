@@ -82,7 +82,7 @@ public class ProductController {
         return model;
     }
 
-    @PostMapping(value = "/api/v1/public/search-product")
+    @GetMapping(value = "/api/v1/public/search-product")
     public ResponseEntity getProduct(@RequestParam(value = "keyword", required = false) String keyword, @RequestParam(value = "category", required = false) Long categoryId) {
         List<Product> products = productService.searchProduct(keyword, categoryId);
         return new ResponseEntity<>(products, HttpStatus.OK);
