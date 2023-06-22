@@ -32,7 +32,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class ProductServiceImp implements ProductService {
     @Value("${media.img_path}")
-    private String UPLOADED_FOLDER;
+    private String uploadedFolder;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final MediaRepository mediaRepository;
@@ -68,7 +68,7 @@ public class ProductServiceImp implements ProductService {
     }
     @Override
     public Long saveUploadedFiles(MultipartFile file) throws IOException {
-        File dir = new File(UPLOADED_FOLDER);
+        File dir = new File(uploadedFolder);
         if (!dir.exists()) {
             dir.mkdirs();
         }
