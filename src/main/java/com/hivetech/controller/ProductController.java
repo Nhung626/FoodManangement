@@ -14,6 +14,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -94,7 +95,7 @@ public class ProductController {
         Resource resource = new UrlResource(path.toUri());
         if (resource.exists()) {
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_TYPE, media.getType())
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.valueOf(media.getType()).toString())
                     .body(resource);
 
         } else {
