@@ -8,6 +8,7 @@ import com.hivetech.repository.CategoryRepository;
 import com.hivetech.repository.ProductRepository;
 import com.hivetech.service.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,8 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImp implements ProductService {
-    private final String UPLOADED_FOLDER = System.getProperty("user.home") + File.separator + "Downloads";
+    @Value("${media.img-path}")
+    private String UPLOADED_FOLDER;
     private final String FILE_EXTENSION = ".jpg";
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
