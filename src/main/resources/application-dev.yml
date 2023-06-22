@@ -12,7 +12,18 @@ spring:
         dialect: org.hibernate.dialect.MariaDBDialect
         show_sql: true
         format_sql: true
+logging:
+  level:
+    root: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"
+  file:
+    name: ./logs/ine3app.log
+    append: true
+  rolling:
+    policy: timeBased
+    file-name-pattern: ./logs/ine3app-%d{yyyy-MM-dd}.%i.log
+    max-history: 3
+    max-file-size: 10MB
 server:
   port: 8081
-media:
-  img_path: "${user.home}${file.separator}Downloads${file.separator}images"
