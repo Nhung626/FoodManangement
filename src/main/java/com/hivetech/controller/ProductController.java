@@ -6,6 +6,7 @@ import com.hivetech.entity.Product;
 import com.hivetech.service.interfaces.CategoryService;
 import com.hivetech.service.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class ProductController {
     private final ProductService productService;
     private final CategoryService categoryService;
@@ -113,6 +115,7 @@ public class ProductController {
                     .header(HttpHeaders.CONTENT_TYPE, mediaType.toString())
                     .body(resource);
         } else {
+            log.error("error");
             return ResponseEntity.notFound().build();
         }
 
