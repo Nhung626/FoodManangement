@@ -71,7 +71,6 @@ $(document).ready(function () {
             formData.append("price", $('#price').val());
             formData.append("shortDescription", $('#shortDescription').val());
             formData.append("status", $('#status').val());
-            console.log(formData);
 
             $.ajax({
                 url: '/product',
@@ -81,12 +80,9 @@ $(document).ready(function () {
                 contentType: false,
                 success: function (response) {
                     showPopupSuccess('Success!', 'Add Product Success!');
-                    console.log(formData);
-                    console.log(response);
                 },
                 error: function (xhr) {
                     showPopupError('Error!', xhr.responseJSON.message)
-                    console.log(formData);
                 }
             });
         }

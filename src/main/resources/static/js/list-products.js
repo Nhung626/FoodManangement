@@ -32,9 +32,7 @@ function loadProducts(pageNo, pageSize) {
             let products = response.content;
             let pageNumber = parseInt(response.pageable.pageNumber);
             let pageSize = parseInt(response.pageable.pageSize);
-            console.log(products);
             let totalPages = parseInt(response.totalPages);
-            console.log(totalPages);
             displayProducts(products, pageNumber, pageSize);
             updatePagination(pageNumber, totalPages);
         },

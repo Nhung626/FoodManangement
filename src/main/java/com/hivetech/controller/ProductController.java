@@ -97,7 +97,6 @@ public class ProductController {
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.valueOf(media.getType()).toString())
                     .body(resource);
-
         } else {
             log.error("error");
             return ResponseEntity.notFound().build();
