@@ -15,7 +15,7 @@ public interface ProductService {
 
     Page<Product> getAllProducts(Integer pageNo, Integer pageSize);
 
-    String saveUploadedFiles(MultipartFile file) throws IOException;
+    Long saveUploadedFiles(MultipartFile file) throws IOException;
 
     List<Product> searchProduct(String keyword, Long categoryId);
 }

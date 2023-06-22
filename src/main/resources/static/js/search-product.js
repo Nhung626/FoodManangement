@@ -30,7 +30,7 @@ $(document).ready(function () {
                         var html = ``;
                         html = ` <div class="col-md-3">
                             <div class="card mb-3">
-                                <img src=${response[i].thumbnailImage} class="card-img-top rounded mx-auto d-block product-image" style="width: 200px; height: 200px; object-fit: cover;" onerror="this.onerror=null; this.src='https://ih1.redbubble.net/image.485923678.1240/flat,750x,075,f-pad,750x1000,f8f8f8.u4.jpg'">
+                                <img src="/api/v1/public/images?imageId=${response[i].imageId}" class="card-img-top rounded mx-auto d-block product-image" style="width: 200px; height: 200px; object-fit: cover;" onerror="this.onerror=null; this.src='https://ih1.redbubble.net/image.485923678.1240/flat,750x,075,f-pad,750x1000,f8f8f8.u4.jpg'">
                             <div class="card-body text-center">
                                 <h5 class="card-title"><b>${response[i].name}</b></h5>
                                 <p class="card-text text-danger"><b>$${response[i].price}</b></p>

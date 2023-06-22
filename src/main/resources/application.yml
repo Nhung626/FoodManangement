@@ -17,6 +17,6 @@ spring:
     suffix: .html
     cache: false
 server:
-  port: 8080
+  port: 8081
 media:
-  img-path: "${user.home}${file.separator}Downloads"
+  img_path: "${user.home}${file.separator}Downloads${file.separator}images"

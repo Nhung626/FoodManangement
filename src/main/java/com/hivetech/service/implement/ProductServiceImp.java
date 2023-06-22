@@ -2,12 +2,15 @@ package com.hivetech.service.implement;
 
 import com.hivetech.dto.CreateProductDto;
 import com.hivetech.entity.Category;
+import com.hivetech.entity.Media;
 import com.hivetech.entity.Product;
 import com.hivetech.exception.CustomException;
 import com.hivetech.repository.CategoryRepository;
+import com.hivetech.repository.MediaRepository;
 import com.hivetech.repository.ProductRepository;
 import com.hivetech.service.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,22 +31,22 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImp implements ProductService {
-    @Value("${media.img-path}")
+    @Value("${media.img_path}")
     private String UPLOADED_FOLDER;
-    private final String FILE_EXTENSION = ".jpg";
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final MediaRepository mediaRepository;
 
     @Override
     public Product addProduct(CreateProductDto productDto) throws IOException {
         if (productRepository.findByName(productDto.getName()) != null) {
             throw new CustomException("Product Exist");
         }
-        String thumbnailImage = saveUploadedFiles(productDto.getImage());
+        Long imageId = saveUploadedFiles(productDto.getImage());
         Optional<Category> category = categoryRepository.findById(Long.valueOf(productDto.getCategoryId()));
 
         Product createProduct = Product.builder()
-                .thumbnailImage(thumbnailImage)
+                .imageId(imageId)
                 .name(productDto.getName())
                 .category(category.get())
                 .price(productDto.getPrice())
@@ -53,7 +56,7 @@ public class ProductServiceImp implements ProductService {
         productRepository.save(createProduct);
         return createProduct;
     }
-
+    @Override
     public Page<Product> getAllProducts(Integer pageNo, Integer pageSize) {
         Pageable paging = PageRequest.of(pageNo, pageSize);
         Page<Product> productPage = productRepository.findAll(paging);
@@ -63,9 +66,9 @@ public class ProductServiceImp implements ProductService {
             throw new CustomException("Don't have data.");
         }
     }
-
-    public String saveUploadedFiles(MultipartFile file) throws IOException {
-        File dir = new File(UPLOADED_FOLDER, "images");
+    @Override
+    public Long saveUploadedFiles(MultipartFile file) throws IOException {
+        File dir = new File(UPLOADED_FOLDER);
         if (!dir.exists()) {
             dir.mkdirs();
         }
@@ -73,9 +76,13 @@ public class ProductServiceImp implements ProductService {
         int ranNum = rand.nextInt();
         if (!file.isEmpty()) {
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(dir + "//" + file.getName() + ranNum + FILE_EXTENSION);
+            Path path = Paths.get(dir + "//" + file.getName() + ranNum + getFileExtension(file.getOriginalFilename()));
             Files.write(path, bytes);
-            return path.toString();
+            Media image = new Media();
+            image.setName(path.getFileName().toString());
+            image.setType(file.getContentType());
+            image = mediaRepository.save(image);
+            return image.getId();
         }
         return null;
     }
@@ -95,5 +102,9 @@ public class ProductServiceImp implements ProductService {
             }
         }
         return searchProducts;
+    }
+
+    public String getFileExtension(String fileName){
+        return "." + FilenameUtils.getExtension(fileName);
     }
 }
