@@ -10,7 +10,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
-        show_sql: true
+        show_sql: false
         format_sql: true
   thymeleaf:
     prefix: classpath:/templates/
@@ -31,3 +31,11 @@ logging:
     max-file-size: 10MB
 server:
   port: 8081
+media:
+  img_path: "${user.home}${file.separator}Downloads${file.separator}images"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, env
+      base-path: /actuator
