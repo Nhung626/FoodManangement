@@ -1,4 +1,24 @@
+let pocketBaseUrl;
+let loginPocketBaseInfo = {
+    identity: "",
+    password: "",
+};
 $(document).ready(function () {
+
+    $.ajax({
+        type: "GET",
+        url: "/api/v1/get-value",
+        success: function (data) {
+            pocketBaseUrl = data.pocketBaseHost;
+            loginPocketBaseInfo.identity = data.pocketBaseEmail;
+            loginPocketBaseInfo.password = data.pocketBasePassword;
+            authentication(loginPocketBaseInfo);
+        },
+        error: function (err) {
+            console.log("can't get value");
+        }
+    });
+
     $('.close').click(function () {
         $('#popup').hide();
         clearForm();
@@ -63,55 +83,158 @@ $(document).ready(function () {
             }
         },
         submitHandler: function (form) {
-            let formData = new FormData();
-            let image = $('#imageInput')[0].files[0];
-            formData.append("image", image);
-            formData.append("name", $('#name').val())
-            formData.append("category", $('#category').val());
-            formData.append("price", $('#price').val());
-            formData.append("shortDescription", $('#shortDescription').val());
-            formData.append("status", $('#status').val());
 
+            let image = $('#imageInput')[0].files[0];
+            let record = new FormData();
+            let product = new FormData();
+            let media = new FormData();
+            record.append("data", image);
             $.ajax({
-                url: '/product',
-                type: 'POST',
-                data: formData,
-                processData: false,
+                url: `${pocketBaseUrl}api/collections/image/records`,
+                headers: {"Authorization": localStorage.getItem('token')},
+                type: "POST",
+                data: record,
                 contentType: false,
-                success: function (response) {
-                    showPopupSuccess('Success!', 'Add Product Success!');
+                processData: false,
+                error: function (err) {
+                    console.log('PocketBase  error! ' + err);
                 },
-                error: function (xhr) {
-                    showPopupError('Error!', xhr.responseJSON.message)
+                success: function (response) {
+                    console.log(response)
+
+                    product.append("name", $('#name').val());
+                    product.append("categoryId", $('#category').val());
+                    product.append("price", $('#price').val());
+                    product.append("shortDescription", $('#shortDescription').val());
+                    product.append("status", $('#status').val());
+                    product.append("imageId", response.id);
+
+                    media.append("type", response.collectionName);
+                    media.append("id", response.id);
+                    media.append("name", response.data);
+
+                    console.log(product);
+                    saveProduct(product, media);
+                    console.log(media);
                 }
             });
+
+
         }
     });
-
-    function showPopupSuccess(title, message) {
-        $('#popup .modal-header h2').text(title);
-        $('#popup .modal-header h2').css({
-            'color': 'green'
-        })
-        $('#popup .modal-body h3').text(message);
-        $('#popup').show();
-    }
-
-    function showPopupError(title, message) {
-        $('#popup .modal-header h2').text(title);
-        $('#popup .modal-header h2').css({
-            'color': 'red'
-        })
-        $('#popup .modal-body h3').text(message);
-        $('#popup').show();
-    }
-
-    function clearForm() {
-        $("#formProduct input, #formProduct textarea")
-            .not("#btnAddProduct").each(function () {
-            $(this).val("");
-        });
-        $("#imageInput").val("");
-        $("#imagePreview").attr("src", "#");
-    }
 })
+
+function saveMedia(media) {
+    $.ajax({
+        url: '/api/v1/media',
+        type: 'POST',
+        data: media,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+        },
+        error: function (xhr) {
+            showPopupError('Error!', xhr.responseJSON.message);
+            deleteImage(media.imageId);
+        }
+    });
+}
+
+function saveProduct(product, media) {
+    $.ajax({
+        url: '/api/v1/product',
+        type: 'POST',
+        data: product,
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function (response) {
+            saveMedia(media);
+            showPopupSuccess('Success!', 'Add Product Success!');
+        },
+        error: function (xhr) {
+            showPopupError('Error!', xhr.responseJSON.message);
+            deleteImage(product.imageId);
+        }
+    });
+}
+
+function deleteImage(imageId) {
+    $.ajax({
+        url: `${pocketBaseUrl}api/collections/collection /records/${imageId}`,
+        headers: {"Authorization": ("Admin " + localStorage.getItem('token'))},
+        type: "DELETE",
+        error: function (err) {
+            console.log('Error!', err)
+        },
+        success: function (data) {
+        }
+    })
+}
+
+function authentication(loginInfo) {
+    $.ajax({
+        url: `${pocketBaseUrl}api/admins/auth-with-password`,
+        type: "POST",
+        data: loginInfo,
+        error: function (err) {
+            console.log('Error!', err);
+        },
+        success: function (data) {
+            console.log("sss");
+            localStorage.setItem("token", data.token);
+        }
+    });
+}
+
+function uploadImage(image) {
+    $.ajax({
+        url: pocketBaseUrl + "collections/" + collection + "/records",
+        headers: {"Authorization": ("Admin " + localStorage.getItem('token'))},
+        type: "POST",
+        data: new FormData($("#formImage")[0]),
+        contentType: false,
+        cache: false,
+        processData: false,
+        error: function (err) {
+            console.log('PocketBase  error! ' + err)
+        },
+        success: function (data) {
+            let mapData = new Map(Object.entries(data))
+            let postData = {
+                collectionId: mapData.get("@collectionId"),
+                collectionName: mapData.get("@collectionName"),
+                imageId: data.id,
+                imageName: data.image
+            }
+            saveImage(postData);
+        }
+    });
+}
+
+function showPopupSuccess(title, message) {
+    $('#popup .modal-header h2').text(title);
+    $('#popup .modal-header h2').css({
+        'color': 'green'
+    })
+    $('#popup .modal-body h3').text(message);
+    $('#popup').show();
+}
+
+function showPopupError(title, message) {
+    $('#popup .modal-header h2').text(title);
+    $('#popup .modal-header h2').css({
+        'color': 'red'
+    })
+    $('#popup .modal-body h3').text(message);
+    $('#popup').show();
+}
+
+function clearForm() {
+    $("#formProduct input, #formProduct textarea")
+        .not("#btnAddProduct").each(function () {
+        $(this).val("");
+    });
+    $("#imageInput").val("");
+    $("#imagePreview").attr("src", "#");
+}

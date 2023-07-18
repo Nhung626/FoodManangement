@@ -39,3 +39,8 @@ management:
       exposure:
         include: health, info, metrics, env
       base-path: /actuator
+pocketBase:
+  host: http://127.0.0.1:8090/
+  collectionName: admin
+  username: hoanghongcam626@gmail.com
+  password: 1234567890

@@ -20,7 +20,7 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
     private float price;
-    private Long imageId;
+    private String imageId;
     private String shortDescription;
     private String status;
 }

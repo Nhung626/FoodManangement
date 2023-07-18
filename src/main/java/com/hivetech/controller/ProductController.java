@@ -9,6 +9,7 @@ import com.hivetech.service.interfaces.MediaService;
 import com.hivetech.service.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,6 +36,26 @@ public class ProductController {
     private final CategoryService categoryService;
     private final MediaService mediaService;
 
+    @Value("${pocketBase.host}")
+    private String pocketBaseHost;
+    @Value("${pocketBase.username}")
+    private String pocketBaseEmail;
+    @Value("${pocketBase.password}")
+    private String pocketBasePassword;
+
+    @GetMapping("/api/v1/get-value")
+    @ResponseBody
+    public Map returnValue() {
+        return Map.of("pocketBaseHost", pocketBaseHost,
+                "pocketBaseEmail", pocketBaseEmail,
+                "pocketBasePassword", pocketBasePassword);
+    }
+
+    @RequestMapping("/")
+    public String getHome() {
+        return "home";
+    }
+
     @RequestMapping(value = "/product", method = RequestMethod.GET)
     public ModelAndView showCreateProduct() {
         ModelAndView model = new ModelAndView("private/admin/product");
@@ -42,23 +64,15 @@ public class ProductController {
         return model;
     }
 
-    @RequestMapping(value = "/product", method = RequestMethod.POST)
-    public ResponseEntity<Object> createProduct(
-            @RequestParam("image") MultipartFile img,
-            @RequestParam("name") String name,
-            @RequestParam("category") int categoryId,
-            @RequestParam("price") float price,
-            @RequestParam("shortDescription") String shortDescription,
-            @RequestParam("status") String status) throws IOException {
-        CreateProductDto productDto = CreateProductDto.builder()
-                .image(img)
-                .name(name)
-                .categoryId(categoryId)
-                .price(price)
-                .shortDescription(shortDescription)
-                .status(status).build();
-
-        productService.addProduct(productDto);
+    @RequestMapping(value = "/api/v1/product", method = RequestMethod.POST)
+    public ResponseEntity<Object> createProduct(@RequestParam String imageId,
+                                                @RequestParam String name,
+                                                @RequestParam Long categoryId,
+                                                @RequestParam float price,
+                                                @RequestParam String shortDescription,
+                                                @RequestParam String status) throws IOException {
+        CreateProductDto product = new CreateProductDto(imageId, name, categoryId,price, shortDescription,status);
+        productService.addProduct(product);
         return ResponseEntity.status(201).build();
     }
 
@@ -85,21 +99,25 @@ public class ProductController {
     @GetMapping(value = "/api/v1/public/search-product")
     public ResponseEntity getProduct(@RequestParam(value = "keyword", required = false) String keyword, @RequestParam(value = "category", required = false) Long categoryId) {
         List<Product> products = productService.searchProduct(keyword, categoryId);
+        for (Product product : products) {
+            String urlImage = mediaService.getPathImage(product.getImageId());
+            product.setImageId(urlImage);
+        }
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @RequestMapping("/api/v1/public/images")
-    public ResponseEntity<Resource> getImage(@RequestParam("imageId") Long imageId) throws IOException {
-        Path path = Paths.get(mediaService.getPathImage(imageId));
-        Media media = mediaService.getMedia(imageId);
-        Resource resource = new UrlResource(path.toUri());
-        if (resource.exists()) {
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.valueOf(media.getType()).toString())
-                    .body(resource);
-        } else {
-            log.error("error");
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    @RequestMapping("/api/v1/public/images")
+//    public ResponseEntity<Resource> getImage(@RequestParam("imageId") Long imageId) throws IOException {
+//        Path path = Paths.get(mediaService.getPathImage(imageId));
+//        Media media = mediaService.getMedia(imageId);
+//        Resource resource = new UrlResource(path.toUri());
+//        if (resource.exists()) {
+//            return ResponseEntity.ok()
+//                    .header(HttpHeaders.CONTENT_TYPE, MediaType.valueOf(media.getType()).toString())
+//                    .body(resource);
+//        } else {
+//            log.error("error");
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 }

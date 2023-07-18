@@ -42,13 +42,12 @@ public class ProductServiceImp implements ProductService {
         if (productRepository.findByName(productDto.getName()) != null) {
             throw new CustomException("Product Exist");
         }
-        Long imageId = saveUploadedFiles(productDto.getImage());
-        Optional<Category> category = categoryRepository.findById(Long.valueOf(productDto.getCategoryId()));
+        Category category = categoryRepository.findByCategoryId(productDto.getCategoryId());
 
         Product createProduct = Product.builder()
-                .imageId(imageId)
+                .imageId(productDto.getImageId())
                 .name(productDto.getName())
-                .category(category.get())
+                .category(category)
                 .price(productDto.getPrice())
                 .shortDescription(productDto.getShortDescription())
                 .status(productDto.getStatus()).build();
@@ -66,26 +65,26 @@ public class ProductServiceImp implements ProductService {
             throw new CustomException("Don't have data.");
         }
     }
-    @Override
-    public Long saveUploadedFiles(MultipartFile file) throws IOException {
-        File dir = new File(uploadedFolder);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        Random rand = new Random();
-        int ranNum = rand.nextInt();
-        if (!file.isEmpty()) {
-            byte[] bytes = file.getBytes();
-            Path path = Paths.get(dir + "//" + file.getName() + ranNum + getFileExtension(file.getOriginalFilename()));
-            Files.write(path, bytes);
-            Media image = new Media();
-            image.setName(path.getFileName().toString());
-            image.setType(file.getContentType());
-            image = mediaRepository.save(image);
-            return image.getId();
-        }
-        return null;
-    }
+//    @Override
+//    public String saveUploadedFiles(MultipartFile file) throws IOException {
+//        File dir = new File(uploadedFolder);
+//        if (!dir.exists()) {
+//            dir.mkdirs();
+//        }
+//        Random rand = new Random();
+//        int ranNum = rand.nextInt();
+//        if (!file.isEmpty()) {
+//            byte[] bytes = file.getBytes();
+//            Path path = Paths.get(dir + "//" + file.getName() + ranNum + getFileExtension(file.getOriginalFilename()));
+//            Files.write(path, bytes);
+//            Media image = new Media();
+//            image.setName(path.getFileName().toString());
+//            image.setType(file.getContentType());
+//            image = mediaRepository.save(image);
+//            return image.getId();
+//        }
+//        return null;
+//    }
 
     public List<Product> searchProduct(String keyword, Long categoryId) {
 

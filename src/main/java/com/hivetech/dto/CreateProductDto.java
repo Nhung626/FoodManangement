@@ -9,9 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @Getter
 public class CreateProductDto {
-    private MultipartFile image;
+    private String imageId;
     private String name;
-    private int categoryId;
+    private Long categoryId;
     private float price;
     private String shortDescription;
     private String status;
