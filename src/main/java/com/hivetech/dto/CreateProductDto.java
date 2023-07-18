@@ -1,7 +1,6 @@
 package com.hivetech.dto;
 
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Builder
 @AllArgsConstructor
