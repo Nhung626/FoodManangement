@@ -4,14 +4,12 @@ import com.hivetech.dto.CreateProductDto;
 import com.hivetech.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
 public interface ProductService {
-    Product addProduct(CreateProductDto product) throws IOException;
+    Product addProduct(CreateProductDto product);
 
     Page<Product> getAllProducts(Integer pageNo, Integer pageSize);
 

@@ -2,43 +2,29 @@ package com.hivetech.service.implement;
 
 import com.hivetech.dto.CreateProductDto;
 import com.hivetech.entity.Category;
-import com.hivetech.entity.Media;
 import com.hivetech.entity.Product;
 import com.hivetech.exception.CustomException;
 import com.hivetech.repository.CategoryRepository;
-import com.hivetech.repository.MediaRepository;
 import com.hivetech.repository.ProductRepository;
 import com.hivetech.service.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImp implements ProductService {
-    @Value("${media.img_path}")
-    private String uploadedFolder;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final MediaRepository mediaRepository;
 
     @Override
-    public Product addProduct(CreateProductDto productDto) throws IOException {
+    public Product addProduct(CreateProductDto productDto) {
         if (productRepository.findByName(productDto.getName()) != null) {
             throw new CustomException("Product Exist");
         }
@@ -55,6 +41,7 @@ public class ProductServiceImp implements ProductService {
         productRepository.save(createProduct);
         return createProduct;
     }
+
     @Override
     public Page<Product> getAllProducts(Integer pageNo, Integer pageSize) {
         Pageable paging = PageRequest.of(pageNo, pageSize);
@@ -65,26 +52,6 @@ public class ProductServiceImp implements ProductService {
             throw new CustomException("Don't have data.");
         }
     }
-//    @Override
-//    public String saveUploadedFiles(MultipartFile file) throws IOException {
-//        File dir = new File(uploadedFolder);
-//        if (!dir.exists()) {
-//            dir.mkdirs();
-//        }
-//        Random rand = new Random();
-//        int ranNum = rand.nextInt();
-//        if (!file.isEmpty()) {
-//            byte[] bytes = file.getBytes();
-//            Path path = Paths.get(dir + "//" + file.getName() + ranNum + getFileExtension(file.getOriginalFilename()));
-//            Files.write(path, bytes);
-//            Media image = new Media();
-//            image.setName(path.getFileName().toString());
-//            image.setType(file.getContentType());
-//            image = mediaRepository.save(image);
-//            return image.getId();
-//        }
-//        return null;
-//    }
 
     public List<Product> searchProduct(String keyword, Long categoryId) {
 
@@ -101,9 +68,5 @@ public class ProductServiceImp implements ProductService {
             }
         }
         return searchProducts;
-    }
-
-    public String getFileExtension(String fileName){
-        return "." + FilenameUtils.getExtension(fileName);
     }
 }

@@ -31,8 +31,6 @@ logging:
     max-file-size: 10MB
 server:
   port: 8081
-media:
-  img_path: "${user.home}${file.separator}Downloads${file.separator}images"
 management:
   endpoints:
     web:
@@ -42,5 +40,5 @@ management:
 pocketBase:
   host: http://127.0.0.1:8090/
   collectionName: admin
-  username: hoanghongcam626@gmail.com
+  username: ine3pocketbase@gmail.com
   password: 1234567890

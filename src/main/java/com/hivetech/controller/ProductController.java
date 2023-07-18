@@ -2,7 +2,6 @@ package com.hivetech.controller;
 
 import com.hivetech.dto.CreateProductDto;
 import com.hivetech.entity.Category;
-import com.hivetech.entity.Media;
 import com.hivetech.entity.Product;
 import com.hivetech.service.interfaces.CategoryService;
 import com.hivetech.service.interfaces.MediaService;
@@ -10,21 +9,14 @@ import com.hivetech.service.interfaces.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -51,11 +43,6 @@ public class ProductController {
                 "pocketBasePassword", pocketBasePassword);
     }
 
-    @RequestMapping("/")
-    public String getHome() {
-        return "home";
-    }
-
     @RequestMapping(value = "/product", method = RequestMethod.GET)
     public ModelAndView showCreateProduct() {
         ModelAndView model = new ModelAndView("private/admin/product");
@@ -65,13 +52,7 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/api/v1/product", method = RequestMethod.POST)
-    public ResponseEntity<Object> createProduct(@RequestParam String imageId,
-                                                @RequestParam String name,
-                                                @RequestParam Long categoryId,
-                                                @RequestParam float price,
-                                                @RequestParam String shortDescription,
-                                                @RequestParam String status) throws IOException {
-        CreateProductDto product = new CreateProductDto(imageId, name, categoryId,price, shortDescription,status);
+    public ResponseEntity<Object> createProduct(@RequestBody CreateProductDto product) throws IOException {
         productService.addProduct(product);
         return ResponseEntity.status(201).build();
     }

@@ -86,8 +86,8 @@ $(document).ready(function () {
 
             let image = $('#imageInput')[0].files[0];
             let record = new FormData();
-            let product = new FormData();
-            let media = new FormData();
+            let product;
+            let media;
             record.append("data", image);
             $.ajax({
                 url: `${pocketBaseUrl}api/collections/image/records`,
@@ -102,16 +102,20 @@ $(document).ready(function () {
                 success: function (response) {
                     console.log(response)
 
-                    product.append("name", $('#name').val());
-                    product.append("categoryId", $('#category').val());
-                    product.append("price", $('#price').val());
-                    product.append("shortDescription", $('#shortDescription').val());
-                    product.append("status", $('#status').val());
-                    product.append("imageId", response.id);
+                    product = {
+                        "name": $('#name').val(),
+                        "categoryId": $('#category').val(),
+                        "price": $('#price').val(),
+                        "shortDescription": $('#shortDescription').val(),
+                        "status": $('#status').val(),
+                        "imageId": response.id
+                    };
 
-                    media.append("type", response.collectionName);
-                    media.append("id", response.id);
-                    media.append("name", response.data);
+                    media = {
+                        "type": response.collectionName,
+                        "id": response.id,
+                        "name": response.data
+                    };
 
                     console.log(product);
                     saveProduct(product, media);
@@ -128,14 +132,13 @@ function saveMedia(media) {
     $.ajax({
         url: '/api/v1/media',
         type: 'POST',
-        data: media,
-        contentType: false,
-        processData: false,
+        data: JSON.stringify(media),
+        contentType: "application/json",
         success: function (response) {
         },
         error: function (xhr) {
             showPopupError('Error!', xhr.responseJSON.message);
-            deleteImage(media.imageId);
+            deleteImage(media.id);
         }
     });
 }
@@ -144,10 +147,8 @@ function saveProduct(product, media) {
     $.ajax({
         url: '/api/v1/product',
         type: 'POST',
-        data: product,
-        contentType: false,
-        cache: false,
-        processData: false,
+        data: JSON.stringify(product),
+        contentType: "application/json",
         success: function (response) {
             saveMedia(media);
             showPopupSuccess('Success!', 'Add Product Success!');

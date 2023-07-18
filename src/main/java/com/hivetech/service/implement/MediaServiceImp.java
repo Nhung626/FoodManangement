@@ -7,12 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-
 @Service
 @RequiredArgsConstructor
 public class MediaServiceImp implements MediaService {
-    @Value("${pocketbase.host}")
+    @Value("${pocketBase.host}")
     private String host;
     private final MediaRepository mediaRepository;
 
