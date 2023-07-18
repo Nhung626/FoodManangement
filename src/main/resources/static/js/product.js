@@ -116,10 +116,7 @@ $(document).ready(function () {
                         "id": response.id,
                         "name": response.data
                     };
-
-                    console.log(product);
                     saveProduct(product, media);
-                    console.log(media);
                 }
             });
 
@@ -166,7 +163,7 @@ function deleteImage(imageId) {
         headers: {"Authorization": ("Admin " + localStorage.getItem('token'))},
         type: "DELETE",
         error: function (err) {
-            console.log('Error!', err)
+            console.log('Error!', err);
         },
         success: function (data) {
         }
@@ -182,33 +179,7 @@ function authentication(loginInfo) {
             console.log('Error!', err);
         },
         success: function (data) {
-            console.log("sss");
             localStorage.setItem("token", data.token);
-        }
-    });
-}
-
-function uploadImage(image) {
-    $.ajax({
-        url: pocketBaseUrl + "collections/" + collection + "/records",
-        headers: {"Authorization": ("Admin " + localStorage.getItem('token'))},
-        type: "POST",
-        data: new FormData($("#formImage")[0]),
-        contentType: false,
-        cache: false,
-        processData: false,
-        error: function (err) {
-            console.log('PocketBase  error! ' + err)
-        },
-        success: function (data) {
-            let mapData = new Map(Object.entries(data))
-            let postData = {
-                collectionId: mapData.get("@collectionId"),
-                collectionName: mapData.get("@collectionName"),
-                imageId: data.id,
-                imageName: data.image
-            }
-            saveImage(postData);
         }
     });
 }
