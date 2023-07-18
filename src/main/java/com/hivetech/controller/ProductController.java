@@ -86,19 +86,4 @@ public class ProductController {
         }
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
-
-//    @RequestMapping("/api/v1/public/images")
-//    public ResponseEntity<Resource> getImage(@RequestParam("imageId") Long imageId) throws IOException {
-//        Path path = Paths.get(mediaService.getPathImage(imageId));
-//        Media media = mediaService.getMedia(imageId);
-//        Resource resource = new UrlResource(path.toUri());
-//        if (resource.exists()) {
-//            return ResponseEntity.ok()
-//                    .header(HttpHeaders.CONTENT_TYPE, MediaType.valueOf(media.getType()).toString())
-//                    .body(resource);
-//        } else {
-//            log.error("error");
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
 }
